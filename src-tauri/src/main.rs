@@ -3,14 +3,8 @@
 
 use tauri::{Menu, MenuItem, Submenu};
 
-// 对command单独管理
-mod command;
-
 fn main() {
-    #[cfg(any(target_os = "linux", target_os = "windows"))]
-    let menu = Menu::new();
-    #[cfg(target_os = "macos")]
-    let menu = Menu::new().add_submenu(Submenu::new(
+    let edit_menu = Submenu::new(
         "Edit",
         Menu::new()
             .add_native_item(MenuItem::Undo)
@@ -21,21 +15,23 @@ fn main() {
             .add_native_item(MenuItem::SelectAll)
             .add_native_item(MenuItem::CloseWindow)
             .add_native_item(MenuItem::Quit),
-    ));
+    );
     tauri::Builder::default()
-        .menu(menu)
-        .invoke_handler(tauri::generate_handler![
-            command::pakeplus::open_window,
-            command::pakeplus::preview_from_config,
-            command::pakeplus::update_build_file,
-            command::pakeplus::update_config_file,
-            command::pakeplus::update_cargo_file,
-            command::pakeplus::update_main_rust,
-            command::pakeplus::update_custom_js,
-            command::pakeplus::content_to_base64,
-            command::pakeplus::update_config_json,
-            command::pakeplus::rust_main_window,
-        ])
+        .setup(|app| {
+            let _window = tauri::WindowBuilder::new(
+                app,
+                "PakePlus",
+                tauri::WindowUrl::App("https://im.sfengx.top/".into()),
+            )
+            .initialization_script(include_str!("./extension/custom.js"))
+            .title("PakePlus")
+            .inner_size(800.0, 600.0)
+            .center()
+            .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
+            .build()?;
+            Ok(())
+        })
+        .menu(Menu::new().add_submenu(edit_menu))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
