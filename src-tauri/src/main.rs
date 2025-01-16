@@ -24,7 +24,7 @@ fn main() {
                 tauri::WindowUrl::App("https://im.sfengx.top/".into()),
             )
             .initialization_script(include_str!("./extension/custom.js"))
-            .title("PakePlus")
+            .title("BoxIm")
             .inner_size(800.0, 600.0)
             .center()
             .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
